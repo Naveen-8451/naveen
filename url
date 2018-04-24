@@ -1,0 +1,37 @@
+import pandas as pd
+import logging
+import numpy as np
+from dateutil import parser
+from calendar import monthrange
+import datetime
+import gc
+from pandas import DataFrame
+
+LOGGER = logging.getLogger("umich")
+LOGGER.setLevel(logging.DEBUG)
+
+def change_date(month,year):
+    mnth = parser.parse(month).strftime('%m')
+    year_value=int(year)
+    mnth=int(mnth)
+    last_day = monthrange(year_value,mnth)[1]
+    return datetime.datetime(year,mnth,last_day).strftime("%Y-%m-%d")
+    
+    
+def lambda_handler(event, context) :
+    url="http://www.sca.isr.umich.edu/files/tbmics.csv"
+    LOGGER.info('Consumer Data has been loaded %s', url)
+    raw_data = pd.read_csv(url, names = ['month','year','ics_all'],header=0)
+    raw_data['complete_date'] = list(map(change_date, raw_data['month'],raw_data['year']))
+    yesterday = date.today() - timedelta(1)
+    runDate = yesterday.strftime('%Y%m%d')
+    LOGGER.info('Done preparing %s rows of consumer data',len(raw_data.index))
+    gc.collect()
+    LOGGER.info('Done')
+    gc.collect()
+
+        
+if __name__ == '__main__':
+     lambda_handler(None,None)
+
+   
